@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/react";
 import "@fontsource/hind-siliguri/bengali-400.css";
 import "@fontsource/hind-siliguri/bengali-500.css";
 import "@fontsource/hind-siliguri/bengali-600.css";
@@ -36,7 +37,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="bn">
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
