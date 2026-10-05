@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme {
+  --font-ui: "Hind Siliguri", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Playfair Display", "Noto Serif Bengali", Georgia, serif;
+  --font-bn-serif: "Noto Serif Bengali", "Playfair Display", Georgia, serif;
+
+  --color-paper: #f5efe3;
+  --color-ink: #2b2018;
+  --color-ink-soft: #6b5a4b;
+  --color-line: #ddd0b8;
+  --color-wood: #7a4d2a;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 3px solid #b0702c;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
