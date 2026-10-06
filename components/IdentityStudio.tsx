@@ -85,22 +85,33 @@ export default function IdentityStudio() {
 
   const cardRef = useRef<HTMLDivElement>(null);
   const previewAnchor = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<HTMLDivElement>(null);
 
   const data: CardData = useMemo(
     () => ({ name, photo, bookCount, authors, genreIds, themeId }),
     [name, photo, bookCount, authors, genreIds, themeId],
   );
 
-  // Floating "Preview" button on small screens when the card scrolls away
+  // Mobile: preview + download sit at the very bottom, below all the options.
+  // Show a floating "Preview ↓" button once the user is inside the options and
+  // the preview is still below the screen. It hides when the preview is reached.
   useEffect(() => {
-    const el = previewAnchor.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => setPreviewOut(!entry.isIntersecting),
-      { threshold: 0.15 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
+    const check = () => {
+      const studio = studioRef.current;
+      const anchor = previewAnchor.current;
+      if (!studio || !anchor) return;
+      const vh = window.innerHeight;
+      const insideStudio = studio.getBoundingClientRect().top < vh * 0.4;
+      const previewBelow = anchor.getBoundingClientRect().top > vh * 0.85;
+      setPreviewOut(insideStudio && previewBelow);
+    };
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    window.addEventListener("resize", check);
+    return () => {
+      window.removeEventListener("scroll", check);
+      window.removeEventListener("resize", check);
+    };
   }, []);
 
   const fileBase = useCallback(() => {
@@ -172,11 +183,12 @@ export default function IdentityStudio() {
   return (
     <div
       id="studio"
+      ref={studioRef}
       className="mx-auto grid w-full max-w-6xl scroll-mt-4 gap-8 px-5 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,520px)] lg:items-start"
     >
-      {/* Card first on mobile, right column on desktop */}
-      <div className="order-first lg:order-last lg:sticky lg:top-6">
-        <div ref={previewAnchor}>
+      {/* Mobile: at the very bottom, after all options. Desktop: sticky right column. */}
+      <div className="order-last pb-8 lg:sticky lg:top-6 lg:pb-0">
+        <div ref={previewAnchor} className="scroll-mt-4">
           <CardPreview data={data} cardRef={cardRef} />
         </div>
         <DownloadActions
@@ -217,7 +229,7 @@ export default function IdentityStudio() {
           }
           className="fixed bottom-5 right-5 z-20 min-h-12 rounded-full bg-ink px-5 text-sm font-semibold text-paper shadow-lg lg:hidden"
         >
-          Preview ↑
+          Preview ↓
         </button>
       )}
     </div>
